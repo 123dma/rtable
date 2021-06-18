@@ -8,6 +8,6 @@
     <dimen name="rtable_header_textSize"></dimen>
     <dimen name="rtable_row_content_textSize"></dimen>
 
-    <integer name="rtable_rowsPerPage">10</integer>
+    <integer name="rtable_rowsPerPage">5</integer>
 
 </resources>

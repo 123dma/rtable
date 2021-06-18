@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Pagination<T> {
 
-    private int itemsPerPage;
+    public int itemsPerPage;
     private int indexPage = 0;
     private List<T> collection;
 

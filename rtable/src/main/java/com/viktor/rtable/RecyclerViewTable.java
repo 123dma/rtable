@@ -2,7 +2,9 @@ package com.viktor.rtable;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
@@ -83,6 +85,7 @@ public class RecyclerViewTable extends LinearLayout {
     private ColumnHeader[] headers;
     private OnRowClicked onRowClicked;
     private TextView textViewNoRows;
+    private int quantidadePaginas;
 
     public RecyclerViewTable(Context context) {
         super(context);
@@ -131,9 +134,12 @@ public class RecyclerViewTable extends LinearLayout {
             }
         });
 
+
         findViewById(R.id.click_dtable_before_).setOnClickListener(beforeEvent);
         findViewById(R.id.click_dtable_after).setOnClickListener(afterEvent);
     }
+
+
 
 
     private View.OnClickListener beforeEvent = new View.OnClickListener() {
@@ -146,6 +152,28 @@ public class RecyclerViewTable extends LinearLayout {
             }else{
                 adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pagination.getPageIndex());
             }
+
+            try {
+                TextView myAwesomeTextView = (TextView) findViewById(R.id.pagina_atual);
+                myAwesomeTextView.setText(String.valueOf(pagination.getPageIndex() + 1));
+
+                if (pagination.getPageIndex() == 0) {
+                    view.setEnabled(false);
+                } else {
+                    view.setEnabled(true); }
+
+                if (quantidadePaginas < (pagination.getPageIndex() + 1)) {
+                    findViewById(R.id.click_dtable_after).setEnabled(false);
+                } else {
+                    findViewById(R.id.click_dtable_after).setEnabled(true);
+                }
+
+            } catch (Exception ex) {
+
+            }
+
+
+
 
             recyclerDetail.swapAdapter(adapter, false);
             scrollX = 0;
@@ -164,6 +192,30 @@ public class RecyclerViewTable extends LinearLayout {
                 adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pagination.getPageIndex());
             }
 
+
+            try {
+                if (quantidadePaginas ==  (pagination.getPageIndex()+1)) {
+                    view.setEnabled(false);
+                }else {
+                    view.setEnabled(true);
+                }
+
+                if (pagination.getPageIndex() == 0){
+                    findViewById(R.id.click_dtable_before_).setEnabled(false);
+                }else{
+                    findViewById(R.id.click_dtable_before_).setEnabled(true);
+                }
+
+                TextView myAwesomeTextView = (TextView)findViewById(R.id.pagina_atual);
+                myAwesomeTextView.setText(String.valueOf(pagination.getPageIndex()+1));
+            } catch (Exception ex) {
+
+            }
+
+
+
+
+
             recyclerDetail.swapAdapter(adapter, false);
             scrollX = 0;
             scrollView.scrollTo(0,0);
@@ -180,6 +232,9 @@ public class RecyclerViewTable extends LinearLayout {
             setupGridHeader(headers);
             this.clazz = clazz;
             pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage));
+
+
+
             setUpRecyclerView();
             showRecycler();
         }
@@ -196,6 +251,16 @@ public class RecyclerViewTable extends LinearLayout {
             this.clazz = clazz;
             this.onRowClicked = onRowClicked;
             pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage));
+            try {
+                if(collection.size() > 0){
+                    TextView myAwesomeTextView = (TextView)findViewById(R.id.total_paginas);
+                    quantidadePaginas = (collection.size() / pagination.itemsPerPage)+1;
+                    myAwesomeTextView.setText(String.valueOf(quantidadePaginas));
+                }
+            } catch (Exception ex) {
+
+            }
+            
             setUpRecyclerView();
             showRecycler();
         }
@@ -204,11 +269,21 @@ public class RecyclerViewTable extends LinearLayout {
     private void setupGridHeader(ColumnHeader[] headers) {
         this.headers = headers;
         scrollView = findViewById(R.id.grid_recycler_header);
+
         LinearLayout view = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.scrollv_header_detail_emp, scrollView, false);
+        scrollView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        view.setGravity(Gravity.BOTTOM);
+
         int i = 0;
 
         while (i < this.headers.length){
             view.addView(createTextView(headers[i]));
+            view.setGravity(Gravity.CENTER_HORIZONTAL);
             i++;
         }
 
