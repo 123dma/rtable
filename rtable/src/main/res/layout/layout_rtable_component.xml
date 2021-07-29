@@ -26,8 +26,7 @@
         android:id="@+id/rtable_no_data_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:text="No Data"
+        android:text="Não existe histórico registrado"
         android:textStyle="bold"
         android:textAlignment="center"
         android:gravity="center"/>
