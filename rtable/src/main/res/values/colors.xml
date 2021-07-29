@@ -2,6 +2,7 @@
 <resources>
     <color name="rtable_primaryColor">#FF0000</color>
     <color name="rtable_header_textColor">#000000</color>
+    <color name="rtable_header_textColorBlack">#ffffff</color>
     <color name="rtable_footer_textColor">#ffffff</color>
 
 

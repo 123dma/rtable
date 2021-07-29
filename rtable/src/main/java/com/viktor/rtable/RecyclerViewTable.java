@@ -87,7 +87,7 @@ public class RecyclerViewTable extends LinearLayout {
     private TextView textViewNoRows;
     private int quantidadePaginas;
     public int indexAtual;
-    public int textColor;
+    public int txtColor;
 
     public RecyclerViewTable(Context context) {
         super(context);
@@ -109,14 +109,14 @@ public class RecyclerViewTable extends LinearLayout {
         this.recyclerDetail = findViewById(R.id.grid_recycler_content);
     }
 
-    private void setUpRecyclerView(){
+    private void setUpRecyclerView(int txtColor){
         FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
         gridLayoutManager.setTotalColumnCount(1);
 
         if(onRowClicked == null){
-            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, textColor);
+            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, txtColor);
         }else{
-            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, onRowClicked, pagination.getPageIndex(),textColor);
+            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, onRowClicked, pagination.getPageIndex(),txtColor);
         }
 
         recyclerDetail.setLayoutManager(gridLayoutManager);
@@ -159,9 +159,9 @@ public class RecyclerViewTable extends LinearLayout {
         List<Object> list = pagination.prev();
 
         if(onRowClicked == null){
-            adapter = new RTableAdapter(getContext(), list, clazz, textColor);
+            adapter = new RTableAdapter(getContext(), list, clazz, txtColor);
         }else{
-            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, textColor);
+            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, txtColor);
         }
 
         try {
@@ -196,9 +196,9 @@ public class RecyclerViewTable extends LinearLayout {
         List<Object> list = pagination.next(pageIndex);
 
         if(onRowClicked == null){
-            adapter = new RTableAdapter(getContext(), list, clazz, textColor);
+            adapter = new RTableAdapter(getContext(), list, clazz, txtColor);
         }else{
-            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, textColor);
+            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, txtColor);
         }
         try {
            if (quantidadePaginas ==  (pageIndex+1)) {
@@ -238,15 +238,15 @@ public class RecyclerViewTable extends LinearLayout {
      * @param collection
      * @param clazz
      */
-    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, int indexPage){
+    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, int indexPage, int textColor){
         if(!collection.isEmpty()){
-            setupGridHeader(headers);
+            setupGridHeader(headers, textColor);
             this.clazz = clazz;
             pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage), indexPage);
 
 
 
-            setUpRecyclerView();
+            setUpRecyclerView(txtColor);
             showRecycler();
         }
     }
@@ -258,7 +258,7 @@ public class RecyclerViewTable extends LinearLayout {
      */
     public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, OnRowClicked onRowClicked, int indexPage, int textColor){
         if(!collection.isEmpty()){
-            setupGridHeader(headers);
+            setupGridHeader(headers, textColor);
             this.clazz = clazz;
             this.onRowClicked = onRowClicked;
             pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage), indexPage);
@@ -278,13 +278,13 @@ public class RecyclerViewTable extends LinearLayout {
             myAwesomeTextView.setText(String.valueOf(indexPage+1));
 
             indexAtual = indexPage;
-            textColor = textColor;
-            setUpRecyclerView();
+            txtColor = textColor;
+            setUpRecyclerView(txtColor);
             showRecycler();
         }
     }
 
-    private void setupGridHeader(ColumnHeader[] headers) {
+    private void setupGridHeader(ColumnHeader[] headers, int textColor) {
         this.headers = headers;
         scrollView = findViewById(R.id.grid_recycler_header);
 
@@ -300,7 +300,7 @@ public class RecyclerViewTable extends LinearLayout {
         int i = 0;
 
         while (i < this.headers.length){
-            view.addView(createTextView(headers[i]));
+            view.addView(createTextView(headers[i],textColor));
             view.setGravity(Gravity.CENTER_HORIZONTAL);
             i++;
         }
@@ -308,11 +308,15 @@ public class RecyclerViewTable extends LinearLayout {
         scrollView.addView(view);
     }
 
-    private TextView createTextView(ColumnHeader header) {
+    private TextView createTextView(ColumnHeader header, int textColor) {
         TextView txt = new TextView(getContext());
         txt.setId(Utils.randomInt());
         txt.setText(header.getHeaderText());
-        txt.setTextColor(textColor);
+        if(textColor == 1)
+            txt.setTextColor(getResources().getColor(R.color.rtable_header_textColorBlack));
+        else
+            txt.setTextColor(getResources().getColor(R.color.rtable_header_textColor));
+
         txt.setLayoutParams(new ViewGroup.LayoutParams(
                 Utils.Conversion.dp(header.getWidth(), getResources()),
                     ViewGroup.LayoutParams.MATCH_PARENT

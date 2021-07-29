@@ -127,7 +127,10 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
         TextView txt = new TextView(ctx.getApplicationContext());
         txt.setId(Utils.randomInt());
         txt.setText(value);
-        txt.setTextColor(textColor);
+        if(textColor == 1)
+            txt.setTextColor(ctx.getResources().getColor(R.color.rtable_header_textColorBlack));
+        else
+            txt.setTextColor(ctx.getResources().getColor(R.color.rtable_header_textColor));
         txt.setLayoutParams(new ViewGroup.LayoutParams(
                 Utils.Conversion.dp(col.width(), ctx.getResources()),
                 ViewGroup.LayoutParams.MATCH_PARENT
