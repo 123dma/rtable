@@ -3,14 +3,18 @@
 
     <style name="RTableHeaderTheme" parent="Theme.AppCompat.Light">
 
-        <item name="android:textColor">@color/rtable_content_textColorBlack</item>
+
         <item name="android:textSize">@dimen/rtable_header_textSize</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="RTableContentTheme" parent="Theme.AppCompat.Light">
-
         <item name="android:textColor">@color/rtable_content_textColor</item>
+        <item name="android:textSize">@dimen/rtable_row_content_textSize</item>
+    </style>
+
+    <style name="RTableContentThemeBlack" parent="Theme.AppCompat.Light">
+        <item name="android:textColor">@color/rtable_content_textColorBlack</item>
         <item name="android:textSize">@dimen/rtable_row_content_textSize</item>
     </style>
 

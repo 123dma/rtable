@@ -86,6 +86,8 @@ public class RecyclerViewTable extends LinearLayout {
     private OnRowClicked onRowClicked;
     private TextView textViewNoRows;
     private int quantidadePaginas;
+    public int indexAtual;
+    public int textColor;
 
     public RecyclerViewTable(Context context) {
         super(context);
@@ -112,9 +114,9 @@ public class RecyclerViewTable extends LinearLayout {
         gridLayoutManager.setTotalColumnCount(1);
 
         if(onRowClicked == null){
-            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz);
+            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, textColor);
         }else{
-            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, onRowClicked, pagination.getPageIndex());
+            adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, onRowClicked, pagination.getPageIndex(),textColor);
         }
 
         recyclerDetail.setLayoutManager(gridLayoutManager);
@@ -139,10 +141,191 @@ public class RecyclerViewTable extends LinearLayout {
         findViewById(R.id.click_dtable_after).setOnClickListener(afterEvent);
     }
 
-
+    public int obterIndex(){
+        return indexAtual;
+    }
 
 
     private View.OnClickListener beforeEvent = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            voltarPagina(view);
+        }
+    };
+    private void voltarPagina(View view){
+
+        int pageIndex = pagination.getPageIndex()-1;
+        indexAtual = pageIndex;
+        List<Object> list = pagination.prev();
+
+        if(onRowClicked == null){
+            adapter = new RTableAdapter(getContext(), list, clazz, textColor);
+        }else{
+            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, textColor);
+        }
+
+        try {
+            TextView myAwesomeTextView = (TextView) findViewById(R.id.pagina_atual);
+            myAwesomeTextView.setText(String.valueOf(pageIndex+1));
+
+             if (pageIndex == 0) {
+                view.setEnabled(false);
+            } else {
+                view.setEnabled(true); }
+
+           if (quantidadePaginas < (pageIndex + 1)) {
+                findViewById(R.id.click_dtable_after).setEnabled(false);
+            } else {
+                findViewById(R.id.click_dtable_after).setEnabled(true);
+            }
+
+        } catch (Exception ex) {
+
+        }
+
+        recyclerDetail.swapAdapter(adapter, false);
+        scrollX = 0;
+        scrollView.scrollTo(0,0);
+
+    }
+
+    private void avancarPagina(View view){
+
+        int pageIndex = pagination.getPageIndex()+1;
+        indexAtual = pageIndex;
+        List<Object> list = pagination.next(pageIndex);
+
+        if(onRowClicked == null){
+            adapter = new RTableAdapter(getContext(), list, clazz, textColor);
+        }else{
+            adapter = new RTableAdapter(getContext(), list, clazz, onRowClicked, pageIndex, textColor);
+        }
+        try {
+           if (quantidadePaginas ==  (pageIndex+1)) {
+                view.setEnabled(false);
+            }else {
+                view.setEnabled(true);
+            }
+
+            if (pageIndex == 0){
+                findViewById(R.id.click_dtable_before_).setEnabled(false);
+            }else{
+                findViewById(R.id.click_dtable_before_).setEnabled(true);
+            }
+            TextView myAwesomeTextView = (TextView)findViewById(R.id.pagina_atual);
+            myAwesomeTextView.setText(String.valueOf(pageIndex+1));
+
+
+        } catch (Exception ex) {
+
+        }
+        recyclerDetail.swapAdapter(adapter, false);
+        scrollX = 0;
+        scrollView.scrollTo(0,0);
+    }
+
+
+
+    private View.OnClickListener afterEvent = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            avancarPagina(view);
+        }
+    };
+
+    /**
+     *
+     * @param collection
+     * @param clazz
+     */
+    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, int indexPage){
+        if(!collection.isEmpty()){
+            setupGridHeader(headers);
+            this.clazz = clazz;
+            pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage), indexPage);
+
+
+
+            setUpRecyclerView();
+            showRecycler();
+        }
+    }
+
+    /**
+     *
+     * @param collection
+     * @param clazz
+     */
+    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, OnRowClicked onRowClicked, int indexPage, int textColor){
+        if(!collection.isEmpty()){
+            setupGridHeader(headers);
+            this.clazz = clazz;
+            this.onRowClicked = onRowClicked;
+            pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage), indexPage);
+            try {
+                if(collection.size() > 0){
+                    TextView myAwesomeTextView = (TextView)findViewById(R.id.total_paginas);
+                    quantidadePaginas = (collection.size() / pagination.itemsPerPage)+1;
+                    myAwesomeTextView.setText(String.valueOf(quantidadePaginas));
+                }
+            } catch (Exception ex) {
+
+            }
+           // if(indexPage != 0){
+             //   avancarPagina(this);
+           // }
+            TextView myAwesomeTextView = (TextView)findViewById(R.id.pagina_atual);
+            myAwesomeTextView.setText(String.valueOf(indexPage+1));
+
+            indexAtual = indexPage;
+            textColor = textColor;
+            setUpRecyclerView();
+            showRecycler();
+        }
+    }
+
+    private void setupGridHeader(ColumnHeader[] headers) {
+        this.headers = headers;
+        scrollView = findViewById(R.id.grid_recycler_header);
+
+        LinearLayout view = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.scrollv_header_detail_emp, scrollView, false);
+        scrollView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        view.setGravity(Gravity.BOTTOM);
+
+        int i = 0;
+
+        while (i < this.headers.length){
+            view.addView(createTextView(headers[i]));
+            view.setGravity(Gravity.CENTER_HORIZONTAL);
+            i++;
+        }
+
+        scrollView.addView(view);
+    }
+
+    private TextView createTextView(ColumnHeader header) {
+        TextView txt = new TextView(getContext());
+        txt.setId(Utils.randomInt());
+        txt.setText(header.getHeaderText());
+        txt.setTextColor(textColor);
+        txt.setLayoutParams(new ViewGroup.LayoutParams(
+                Utils.Conversion.dp(header.getWidth(), getResources()),
+                    ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        return txt;
+    }
+
+    private void showRecycler(){
+        recyclerDetail.setVisibility(VISIBLE);
+        textViewNoRows.setVisibility(GONE);
+    }
+/*    private View.OnClickListener beforeEvent = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             List<Object> list = pagination.prev();
@@ -180,6 +363,9 @@ public class RecyclerViewTable extends LinearLayout {
             scrollView.scrollTo(0,0);
         }
     };
+
+
+
 
     private View.OnClickListener afterEvent = new View.OnClickListener() {
         @Override
@@ -220,92 +406,5 @@ public class RecyclerViewTable extends LinearLayout {
             scrollX = 0;
             scrollView.scrollTo(0,0);
         }
-    };
-
-    /**
-     *
-     * @param collection
-     * @param clazz
-     */
-    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz){
-        if(!collection.isEmpty()){
-            setupGridHeader(headers);
-            this.clazz = clazz;
-            pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage));
-
-
-
-            setUpRecyclerView();
-            showRecycler();
-        }
-    }
-
-    /**
-     *
-     * @param collection
-     * @param clazz
-     */
-    public void configure(ColumnHeader[] headers, List<Object> collection, Class clazz, OnRowClicked onRowClicked){
-        if(!collection.isEmpty()){
-            setupGridHeader(headers);
-            this.clazz = clazz;
-            this.onRowClicked = onRowClicked;
-            pagination = new Pagination<>(collection, getResources().getInteger(R.integer.rtable_rowsPerPage));
-            try {
-                if(collection.size() > 0){
-                    TextView myAwesomeTextView = (TextView)findViewById(R.id.total_paginas);
-                    quantidadePaginas = (collection.size() / pagination.itemsPerPage)+1;
-                    myAwesomeTextView.setText(String.valueOf(quantidadePaginas));
-                }
-            } catch (Exception ex) {
-
-            }
-            
-            setUpRecyclerView();
-            showRecycler();
-        }
-    }
-
-    private void setupGridHeader(ColumnHeader[] headers) {
-        this.headers = headers;
-        scrollView = findViewById(R.id.grid_recycler_header);
-
-        LinearLayout view = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.scrollv_header_detail_emp, scrollView, false);
-        scrollView.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-        view.setGravity(Gravity.BOTTOM);
-
-        int i = 0;
-
-        while (i < this.headers.length){
-            view.addView(createTextView(headers[i]));
-            view.setGravity(Gravity.CENTER_HORIZONTAL);
-            i++;
-        }
-
-        scrollView.addView(view);
-    }
-
-    private TextView createTextView(ColumnHeader header) {
-        TextView txt = new TextView(getContext());
-        txt.setId(Utils.randomInt());
-        txt.setText(header.getHeaderText());
-        txt.setTextColor(getResources().getColor(R.color.rtable_header_textColor));
-        txt.setLayoutParams(new ViewGroup.LayoutParams(
-                Utils.Conversion.dp(header.getWidth(), getResources()),
-                    ViewGroup.LayoutParams.MATCH_PARENT
-        ));
-
-        return txt;
-    }
-
-    private void showRecycler(){
-        recyclerDetail.setVisibility(VISIBLE);
-        textViewNoRows.setVisibility(GONE);
-    }
-
+    };*/
 }

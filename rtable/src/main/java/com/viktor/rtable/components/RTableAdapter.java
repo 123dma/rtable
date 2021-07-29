@@ -29,6 +29,7 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
     private Class clazz;
     private OnRowClicked onRowClicked;
     private Integer indexPage;
+    private int textColor;
 
     /**
      * Only shows the subcollection of objects.
@@ -36,10 +37,11 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
      * @param beans
      * @param beansClazz
      */
-    public RTableAdapter(Context ctx, List<Object> beans, Class beansClazz){
+    public RTableAdapter(Context ctx, List<Object> beans, Class beansClazz, int textColor){
         this.beans = beans;
         this.ctx = ctx;
         this.clazz = beansClazz;
+        this.textColor = textColor;
     }
 
     /**
@@ -50,12 +52,13 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
      * @param onRowClicked
      * @param indexPage
      */
-    public RTableAdapter(Context ctx, List<Object> beans, Class beansClazz, OnRowClicked onRowClicked, int indexPage){
+    public RTableAdapter(Context ctx, List<Object> beans, Class beansClazz, OnRowClicked onRowClicked, int indexPage, int textColor){
         this.beans = beans;
         this.ctx = ctx;
         this.clazz = beansClazz;
         this.onRowClicked = onRowClicked;
         this.indexPage = indexPage;
+        this.textColor = textColor;
     }
 
     @NonNull
@@ -76,6 +79,7 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
                 f.setAccessible(true);
                 String value = String.valueOf(f.get(rowObject));
                 TextView textView = createTextView(value, f.getAnnotation(GridColumn.class));
+
                 holder.llayout.addView(textView);
 
                 if(indexPage != null){
@@ -123,7 +127,7 @@ public class RTableAdapter extends RecyclerView.Adapter<RTableAdapter.GridRowHol
         TextView txt = new TextView(ctx.getApplicationContext());
         txt.setId(Utils.randomInt());
         txt.setText(value);
-        txt.setTextColor(ctx.getResources().getColor(R.color.rtable_content_textColor));
+        txt.setTextColor(textColor);
         txt.setLayoutParams(new ViewGroup.LayoutParams(
                 Utils.Conversion.dp(col.width(), ctx.getResources()),
                 ViewGroup.LayoutParams.MATCH_PARENT

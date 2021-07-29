@@ -10,16 +10,18 @@ import java.util.List;
 public class Pagination<T> {
 
     public int itemsPerPage;
-    private int indexPage = 0;
+    private int indexPage;
     private List<T> collection;
 
-    public Pagination(List<T> items, int itemsPerPage) {
+    public Pagination(List<T> items, int itemsPerPage, int indexPage) {
+        this.indexPage = indexPage;
         this.itemsPerPage = itemsPerPage;
         this.collection = items;
     }
 
-    public List<T> next(){
-        if(((indexPage+1)*itemsPerPage) < collection.size())
+    public List<T> next(int pagina){
+
+        if(((indexPage)*itemsPerPage) < collection.size())
             indexPage++;
         return pages();
     }
