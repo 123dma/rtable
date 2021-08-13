@@ -351,8 +351,8 @@ public class RecyclerViewTable extends LinearLayout {
     }
 
     private void showRecycler(){
-        recyclerDetail.setVisibility(GONE);
-        textViewNoRows.setVisibility(VISIBLE);
+        recyclerDetail.setVisibility(VISIBLE);
+        textViewNoRows.setVisibility(GONE);
     }
 /*    private View.OnClickListener beforeEvent = new View.OnClickListener() {
         @Override
