@@ -3,12 +3,12 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.viktor'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
 
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion 22
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -27,6 +27,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:1.0.0-alpha3"
-    implementation "androidx.recyclerview:recyclerview:1.0.0-alpha3"
+   implementation "androidx.appcompat:appcompat:1.4.0-alpha03"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
 }
