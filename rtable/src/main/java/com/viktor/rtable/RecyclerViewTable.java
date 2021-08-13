@@ -88,6 +88,8 @@ public class RecyclerViewTable extends LinearLayout {
     private int quantidadePaginas;
     public int indexAtual;
     public int txtColor;
+    private  ImageView botaoVoltar;
+    private ImageView botaoAvancar;
 
     public RecyclerViewTable(Context context) {
         super(context);
@@ -107,17 +109,28 @@ public class RecyclerViewTable extends LinearLayout {
         inflate(ctx, R.layout.layout_rtable_component, this);
         this.textViewNoRows = findViewById(R.id.rtable_no_data_msg);
         this.recyclerDetail = findViewById(R.id.grid_recycler_content);
+
+        this.botaoVoltar = findViewById(R.id.click_dtable_before_);
+        this.botaoAvancar = findViewById(R.id.click_dtable_after);
     }
 
     private void setUpRecyclerView(int txtColor){
         FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
         gridLayoutManager.setTotalColumnCount(1);
 
+        if(txtColor == 1)
+        {
+            botaoAvancar.setColorFilter(getResources().getColor(R.color.rtable_header_textColorBlack));
+            botaoVoltar.setColorFilter(getResources().getColor(R.color.rtable_header_textColorBlack));
+        }
+
         if(onRowClicked == null){
             adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, txtColor);
         }else{
             adapter = new RTableAdapter(getContext(), pagination.pages(), clazz, onRowClicked, pagination.getPageIndex(),txtColor);
         }
+
+       
 
         recyclerDetail.setLayoutManager(gridLayoutManager);
         recyclerDetail.setAdapter(adapter);
@@ -137,8 +150,8 @@ public class RecyclerViewTable extends LinearLayout {
         });
 
 
-        findViewById(R.id.click_dtable_before_).setOnClickListener(beforeEvent);
-        findViewById(R.id.click_dtable_after).setOnClickListener(afterEvent);
+        botaoVoltar.setOnClickListener(beforeEvent);
+        botaoAvancar.setOnClickListener(afterEvent);
     }
 
     public int obterIndex(){
@@ -174,9 +187,9 @@ public class RecyclerViewTable extends LinearLayout {
                 view.setEnabled(true); }
 
            if (quantidadePaginas < (pageIndex + 1)) {
-                findViewById(R.id.click_dtable_after).setEnabled(false);
+                botaoAvancar.setEnabled(false);
             } else {
-                findViewById(R.id.click_dtable_after).setEnabled(true);
+                botaoAvancar.setEnabled(true);
             }
 
         } catch (Exception ex) {
@@ -208,9 +221,9 @@ public class RecyclerViewTable extends LinearLayout {
             }
 
             if (pageIndex == 0){
-                findViewById(R.id.click_dtable_before_).setEnabled(false);
+                botaoVoltar.setEnabled(false);
             }else{
-                findViewById(R.id.click_dtable_before_).setEnabled(true);
+                botaoVoltar.setEnabled(true);
             }
             TextView myAwesomeTextView = (TextView)findViewById(R.id.pagina_atual);
             myAwesomeTextView.setText(String.valueOf(pageIndex+1));
@@ -250,7 +263,19 @@ public class RecyclerViewTable extends LinearLayout {
             showRecycler();
         }
     }
+ 
+ 
+    /**
+     *
+     * @param collection
+     * @param clazz
+     */
+    public void limpar(){
+        recyclerDetail.setVisibility(GONE);
+        textViewNoRows.setVisibility(VISIBLE);
+    }
 
+ 
     /**
      *
      * @param collection
@@ -350,9 +375,9 @@ public class RecyclerViewTable extends LinearLayout {
                     view.setEnabled(true); }
 
                 if (quantidadePaginas < (pagination.getPageIndex() + 1)) {
-                    findViewById(R.id.click_dtable_after).setEnabled(false);
+                    botaoAvancar.setEnabled(false);
                 } else {
-                    findViewById(R.id.click_dtable_after).setEnabled(true);
+                    botaoAvancar.setEnabled(true);
                 }
 
             } catch (Exception ex) {
@@ -391,9 +416,9 @@ public class RecyclerViewTable extends LinearLayout {
                 }
 
                 if (pagination.getPageIndex() == 0){
-                    findViewById(R.id.click_dtable_before_).setEnabled(false);
+                    botaoVoltar.setEnabled(false);
                 }else{
-                    findViewById(R.id.click_dtable_before_).setEnabled(true);
+                    botaoVoltar.setEnabled(true);
                 }
 
                 TextView myAwesomeTextView = (TextView)findViewById(R.id.pagina_atual);

@@ -26,6 +26,7 @@
         android:id="@+id/rtable_no_data_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
         android:text="Não existe histórico registrado"
         android:textAlignment="center"
         android:gravity="center"/>
